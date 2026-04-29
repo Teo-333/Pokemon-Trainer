@@ -1,16 +1,26 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { getLists } from '../api/listsApi';
 import { LANGUAGE_STORAGE_KEY } from './i18n';
 import { renderWithProviders } from '../test/renderWithProviders';
 
+vi.mock('../api/listsApi', () => ({
+  getList: vi.fn(),
+  getLists: vi.fn(),
+}));
+
 describe('i18n', () => {
-  it('renders English text by default', () => {
+  beforeEach(() => {
+    vi.mocked(getLists).mockResolvedValue([]);
+  });
+
+  it('renders English text by default', async () => {
     renderWithProviders();
 
     expect(
       screen.getByRole('heading', { name: 'Pokemon Collections' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Saved Pokemon lists will appear here.')).toBeInTheDocument();
+    expect(await screen.findByText('No saved lists yet')).toBeInTheDocument();
   });
 
   it('switches visible UI text to Russian', async () => {
@@ -21,9 +31,6 @@ describe('i18n', () => {
 
     expect(
       screen.getByRole('heading', { name: 'Коллекции покемонов' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('Сохраненные списки покемонов появятся здесь.'),
     ).toBeInTheDocument();
   });
 
@@ -36,7 +43,7 @@ describe('i18n', () => {
     expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe('ru');
   });
 
-  it('restores a saved Russian preference', () => {
+  it('restores a saved Russian preference', async () => {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, 'ru');
 
     renderWithProviders();
@@ -44,6 +51,7 @@ describe('i18n', () => {
     expect(
       screen.getByRole('heading', { name: 'Коллекции покемонов' }),
     ).toBeInTheDocument();
+    expect(await screen.findByText('Пока нет сохраненных списков')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'RU' })).toHaveAttribute(
       'aria-pressed',
       'true',
