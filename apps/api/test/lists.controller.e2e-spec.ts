@@ -9,6 +9,7 @@ describe('ListsController', () => {
   let app: INestApplication;
   const listsService = {
     create: jest.fn(),
+    createDownloadFile: jest.fn(),
     findAll: jest.fn(),
     findOne: jest.fn(),
   };
@@ -107,6 +108,31 @@ describe('ListsController', () => {
     expect(listsService.findOne).toHaveBeenCalledWith('list-id');
   });
 
+  it('downloads a versioned JSON file', async () => {
+    listsService.createDownloadFile.mockResolvedValue({
+      filename: 'starter-team.json',
+      content: {
+        version: 1,
+        name: 'Starter Team',
+        pokemonIds: [1, 4, 7],
+      },
+    });
+
+    const response = await request(app.getHttpServer())
+      .get('/api/lists/list-id/download')
+      .expect(200);
+
+    expect(response.headers['content-type']).toContain('application/json');
+    expect(response.headers['content-disposition']).toContain('attachment');
+    expect(response.headers['content-disposition']).toContain('starter-team.json');
+    expect(response.body).toEqual({
+      version: 1,
+      name: 'Starter Team',
+      pokemonIds: [1, 4, 7],
+    });
+    expect(listsService.createDownloadFile).toHaveBeenCalledWith('list-id');
+  });
+
   it('returns 404 for unknown list IDs', async () => {
     listsService.findOne.mockRejectedValue(
       new NotFoundException({
@@ -116,5 +142,18 @@ describe('ListsController', () => {
     );
 
     await request(app.getHttpServer()).get('/api/lists/missing').expect(404);
+  });
+
+  it('returns 404 for unknown list download IDs', async () => {
+    listsService.createDownloadFile.mockRejectedValue(
+      new NotFoundException({
+        message: 'Pokemon list was not found.',
+        code: 'LIST_NOT_FOUND',
+      }),
+    );
+
+    await request(app.getHttpServer())
+      .get('/api/lists/missing/download')
+      .expect(404);
   });
 });

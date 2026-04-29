@@ -214,6 +214,28 @@ describe('ListsService', () => {
     });
   });
 
+  it('creates a download file for a saved list', async () => {
+    MockListModel.documents = [
+      new MockListModel({
+        name: 'Saved Team',
+        pokemon: [snapshot(1), snapshot(4), snapshot(7)],
+        totalWeight: 300,
+        distinctSpeciesCount: 3,
+      }) as unknown as SavedDocument,
+    ];
+
+    await expect(
+      service.createDownloadFile('507f1f77bcf86cd799439011'),
+    ).resolves.toEqual({
+      filename: 'saved-team.json',
+      content: {
+        version: 1,
+        name: 'Saved Team',
+        pokemonIds: [1, 4, 7],
+      },
+    });
+  });
+
   it('handles unknown IDs', async () => {
     await expect(service.findOne('507f1f77bcf86cd799439011')).rejects.toBeInstanceOf(
       NotFoundException,
