@@ -5,11 +5,11 @@ export function ListDetailsPage() {
 
   return (
     <section>
-      <p className="text-sm font-medium uppercase tracking-wide text-slate-500">
+      <p className="text-sm font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
         List details
       </p>
       <h1 className="mt-2 text-3xl font-semibold">Pokemon list {id}</h1>
-      <p className="mt-4 text-slate-700">
+      <p className="mt-4 text-slate-700 dark:text-slate-300">
         Saved list details will be added in a later step.
       </p>
     </section>
