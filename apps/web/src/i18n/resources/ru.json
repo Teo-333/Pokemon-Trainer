@@ -34,7 +34,30 @@
   "createList": {
     "eyebrow": "Новый список",
     "title": "Создать список покемонов",
-    "placeholder": "Выбор покемонов из каталога будет добавлен на следующих шагах."
+    "placeholder": "Выбор покемонов из каталога будет добавлен на следующих шагах.",
+    "nameLabel": "Название списка",
+    "namePlaceholder": "Стартовая команда",
+    "catalogueTitle": "Каталог покемонов",
+    "loadingCatalogue": "Загрузка покемонов...",
+    "catalogueErrorTitle": "Не удалось загрузить покемонов",
+    "previous": "Назад",
+    "next": "Далее",
+    "select": "Выбрать",
+    "unselect": "Убрать",
+    "remove": "Удалить",
+    "selectedTitle": "Выбранные покемоны",
+    "selectedEmpty": "Выбранные покемоны появятся здесь.",
+    "validationTitle": "Проверка",
+    "distinctSpecies": "Разных видов",
+    "totalWeight": "Общий вес",
+    "weightValue": "{{count}} гГ",
+    "validSelection": "Выбор корректен.",
+    "save": "Сохранить список",
+    "saving": "Сохранение..."
+  },
+  "validation": {
+    "MIN_DISTINCT_SPECIES": "Выберите минимум 3 покемона разных видов.",
+    "WEIGHT_LIMIT_EXCEEDED": "Общий вес не должен превышать 1300 гектограммов."
   },
   "listDetails": {
     "eyebrow": "Детали списка",
