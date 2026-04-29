@@ -11,6 +11,11 @@ import {
 } from './lists.schema';
 import { PokemonSnapshot } from './types/list.types';
 import {
+  createDownloadFilename,
+  createListFile,
+  DownloadableListFile,
+} from './utils/list-file';
+import {
   ListRuleError,
   ListRulesService,
 } from './validators/list-rules.service';
@@ -31,21 +36,7 @@ export class ListsService {
   }
 
   async findOne(id: string): Promise<ListResponseDto> {
-    if (!isValidObjectId(id)) {
-      throw new NotFoundException({
-        message: 'Pokemon list was not found.',
-        code: 'LIST_NOT_FOUND',
-      });
-    }
-
-    const list = await this.listModel.findById(id).exec();
-
-    if (!list) {
-      throw new NotFoundException({
-        message: 'Pokemon list was not found.',
-        code: 'LIST_NOT_FOUND',
-      });
-    }
+    const list = await this.findDocumentById(id);
 
     return this.toListDto(list);
   }
@@ -65,6 +56,35 @@ export class ListsService {
     }).save();
 
     return this.toListDto(list);
+  }
+
+  async createDownloadFile(id: string): Promise<DownloadableListFile> {
+    const list = this.toListDto(await this.findDocumentById(id));
+
+    return {
+      filename: createDownloadFilename(list.name),
+      content: createListFile(list),
+    };
+  }
+
+  private async findDocumentById(id: string): Promise<PokemonListDocument> {
+    if (!isValidObjectId(id)) {
+      throw new NotFoundException({
+        message: 'Pokemon list was not found.',
+        code: 'LIST_NOT_FOUND',
+      });
+    }
+
+    const list = await this.listModel.findById(id).exec();
+
+    if (!list) {
+      throw new NotFoundException({
+        message: 'Pokemon list was not found.',
+        code: 'LIST_NOT_FOUND',
+      });
+    }
+
+    return list;
   }
 
   private validateRules(pokemon: PokemonSnapshot[]) {

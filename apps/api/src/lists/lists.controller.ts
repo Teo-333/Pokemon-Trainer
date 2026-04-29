@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Header, Param, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { CreateListDto } from './dto/create-list.dto';
 import { ListResponseDto, ListSummaryDto } from './dto/list-response.dto';
 import { ListsService } from './lists.service';
@@ -10,6 +11,17 @@ export class ListsController {
   @Get()
   findAll(): Promise<ListSummaryDto[]> {
     return this.listsService.findAll();
+  }
+
+  @Get(':id/download')
+  @Header('Content-Type', 'application/json')
+  async download(@Param('id') id: string, @Res() response: Response): Promise<void> {
+    const file = await this.listsService.createDownloadFile(id);
+
+    response
+      .attachment(file.filename)
+      .type('application/json')
+      .send(JSON.stringify(file.content, null, 2));
   }
 
   @Get(':id')
