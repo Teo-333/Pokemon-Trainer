@@ -2,6 +2,9 @@
   "app": {
     "name": "Pokemon Collections"
   },
+  "common": {
+    "error": "Something went wrong."
+  },
   "navigation": {
     "createNewList": "Create New List"
   },
@@ -18,7 +21,15 @@
   },
   "savedLists": {
     "eyebrow": "Saved lists",
-    "empty": "Saved Pokemon lists will appear here."
+    "emptyTitle": "No saved lists yet",
+    "empty": "Saved Pokemon lists will appear here.",
+    "loading": "Loading saved lists...",
+    "errorTitle": "Could not load saved lists",
+    "pokemonCount": "Pokemon",
+    "totalWeight": "Total weight",
+    "distinctSpecies": "Distinct species",
+    "createdAt": "Created {{date}}",
+    "weightValue": "{{count}} hg"
   },
   "createList": {
     "eyebrow": "New list",
