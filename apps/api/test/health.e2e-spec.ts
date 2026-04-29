@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request = require('supertest');
+import { setupApp } from '../src/common/bootstrap/setup-app';
 import { HealthModule } from '../src/health/health.module';
 
 describe('Health endpoint', () => {
@@ -12,7 +13,7 @@ describe('Health endpoint', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
-    app.setGlobalPrefix('api');
+    setupApp(app);
     await app.init();
   });
 
