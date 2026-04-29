@@ -1,6 +1,7 @@
 import { render, type RenderOptions } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { routes } from '../app/router';
+import { ThemeProvider } from '../theme/ThemeProvider';
 
 type RenderWithProvidersOptions = RenderOptions & {
   route?: string;
@@ -24,5 +25,10 @@ export function renderWithProviders(
     },
   );
 
-  return render(<RouterProvider router={router} />, options);
+  return render(
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>,
+    options,
+  );
 }
