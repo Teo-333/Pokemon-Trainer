@@ -10,6 +10,24 @@ export const bulbasaur: Pokemon = {
   types: ['grass', 'poison'],
 };
 
+export const charmander: Pokemon = {
+  id: 4,
+  name: 'charmander',
+  speciesName: 'charmander',
+  weight: 85,
+  spriteUrl: null,
+  types: ['fire'],
+};
+
+export const squirtle: Pokemon = {
+  id: 7,
+  name: 'squirtle',
+  speciesName: 'squirtle',
+  weight: 90,
+  spriteUrl: null,
+  types: ['water'],
+};
+
 export const starterListSummary: PokemonListSummary = {
   id: '507f1f77bcf86cd799439011',
   name: 'Starter Team',
