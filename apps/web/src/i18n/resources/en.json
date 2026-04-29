@@ -1,0 +1,33 @@
+{
+  "app": {
+    "name": "Pokemon Collections"
+  },
+  "navigation": {
+    "createNewList": "Create New List"
+  },
+  "theme": {
+    "switchToDark": "Switch to dark theme",
+    "switchToLight": "Switch to light theme",
+    "dark": "Dark",
+    "light": "Light"
+  },
+  "language": {
+    "label": "Language",
+    "english": "English",
+    "russian": "Russian"
+  },
+  "savedLists": {
+    "eyebrow": "Saved lists",
+    "empty": "Saved Pokemon lists will appear here."
+  },
+  "createList": {
+    "eyebrow": "New list",
+    "title": "Create Pokemon list",
+    "placeholder": "Pokemon catalogue selection will be added in the next steps."
+  },
+  "listDetails": {
+    "eyebrow": "List details",
+    "title": "Pokemon list {{id}}",
+    "placeholder": "Saved list details will be added in a later step."
+  }
+}
