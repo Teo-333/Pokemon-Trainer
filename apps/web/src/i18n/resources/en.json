@@ -34,7 +34,30 @@
   "createList": {
     "eyebrow": "New list",
     "title": "Create Pokemon list",
-    "placeholder": "Pokemon catalogue selection will be added in the next steps."
+    "placeholder": "Pokemon catalogue selection will be added in the next steps.",
+    "nameLabel": "List name",
+    "namePlaceholder": "Starter Team",
+    "catalogueTitle": "Pokemon catalogue",
+    "loadingCatalogue": "Loading Pokemon...",
+    "catalogueErrorTitle": "Could not load Pokemon",
+    "previous": "Previous",
+    "next": "Next",
+    "select": "Select",
+    "unselect": "Unselect",
+    "remove": "Remove",
+    "selectedTitle": "Selected Pokemon",
+    "selectedEmpty": "Selected Pokemon will appear here.",
+    "validationTitle": "Validation",
+    "distinctSpecies": "Distinct species",
+    "totalWeight": "Total weight",
+    "weightValue": "{{count}} hg",
+    "validSelection": "Selection is valid.",
+    "save": "Save list",
+    "saving": "Saving..."
+  },
+  "validation": {
+    "MIN_DISTINCT_SPECIES": "Select at least 3 Pokemon of different species.",
+    "WEIGHT_LIMIT_EXCEEDED": "Total weight must not exceed 1300 hectograms."
   },
   "listDetails": {
     "eyebrow": "List details",
