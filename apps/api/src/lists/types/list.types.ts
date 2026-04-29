@@ -7,6 +7,18 @@ export type PokemonSnapshot = {
   types: string[];
 };
 
+export type PokemonList = {
+  id: string;
+  name: string;
+  pokemon: PokemonSnapshot[];
+  totalWeight: number;
+  distinctSpeciesCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PokemonListSummary = Omit<PokemonList, 'pokemon'>;
+
 export type ListRuleValidationResult = {
   totalWeight: number;
   distinctSpeciesCount: number;

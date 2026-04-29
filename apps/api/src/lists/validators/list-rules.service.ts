@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import {
   MAX_TOTAL_WEIGHT,
   MIN_DISTINCT_SPECIES,
@@ -17,6 +18,7 @@ export class ListRuleError extends Error {
   }
 }
 
+@Injectable()
 export class ListRulesService {
   validate(pokemon: PokemonSnapshot[]): ListRuleValidationResult {
     const totalWeight = this.calculateTotalWeight(pokemon);
