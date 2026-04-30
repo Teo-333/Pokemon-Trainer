@@ -64,6 +64,19 @@
     "downloading": "Downloading...",
     "error": "Could not download saved list."
   },
+  "uploadList": {
+    "upload": "Upload JSON",
+    "uploading": "Uploading...",
+    "errors": {
+      "INVALID_JSON": "Upload file must be valid JSON.",
+      "MISSING_VERSION": "Upload file is missing a version.",
+      "UNSUPPORTED_VERSION": "This upload file version is not supported.",
+      "MISSING_POKEMON_IDS": "Upload file is missing pokemonIds.",
+      "INVALID_POKEMON_IDS": "Upload file pokemonIds must be positive numbers.",
+      "POKEMON_LOOKUP_FAILED": "Could not load Pokemon from the uploaded file.",
+      "UNKNOWN": "Could not upload list file."
+    }
+  },
   "listDetails": {
     "eyebrow": "List details",
     "title": "Pokemon list",

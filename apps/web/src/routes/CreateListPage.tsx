@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ApiError } from '../api/http';
 import { createList } from '../api/listsApi';
-import { getPokemonPage } from '../api/pokemonApi';
+import { getPokemonById, getPokemonPage } from '../api/pokemonApi';
+import { UploadListButton } from '../components/lists/UploadListButton';
 import { PageHeader } from '../components/layout/PageHeader';
 import { PokemonCard } from '../components/pokemon/PokemonCard';
 import { SelectedPokemonPanel } from '../components/pokemon/SelectedPokemonPanel';
 import { ValidationSummary } from '../components/pokemon/ValidationSummary';
+import { ListFile } from '../types/list';
 import { Pokemon, PokemonPage } from '../types/pokemon';
 import { validateSelectedPokemon } from '../utils/validation';
 
@@ -104,6 +106,22 @@ export function CreateListPage() {
     }
   }
 
+  async function handleUpload(listFile: ListFile) {
+    try {
+      const pokemon = await Promise.all(
+        listFile.pokemonIds.map((pokemonId) => getPokemonById(pokemonId)),
+      );
+
+      setListName(listFile.name);
+      setSelectedPokemon(pokemon);
+      setSaveError('');
+    } catch (error) {
+      throw error instanceof ApiError
+        ? new Error(error.message)
+        : new Error(t('uploadList.errors.POKEMON_LOOKUP_FAILED'));
+    }
+  }
+
   return (
     <section>
       <PageHeader eyebrow={t('createList.eyebrow')} title={t('createList.title')} />
@@ -177,6 +195,7 @@ export function CreateListPage() {
         </div>
 
         <div className="space-y-4">
+          <UploadListButton onUpload={handleUpload} />
           <SelectedPokemonPanel
             onRemove={removePokemon}
             selectedPokemon={selectedPokemon}

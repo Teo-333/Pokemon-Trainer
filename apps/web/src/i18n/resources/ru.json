@@ -64,6 +64,19 @@
     "downloading": "Скачивание...",
     "error": "Не удалось скачать сохраненный список."
   },
+  "uploadList": {
+    "upload": "Загрузить JSON",
+    "uploading": "Загрузка...",
+    "errors": {
+      "INVALID_JSON": "Файл должен быть корректным JSON.",
+      "MISSING_VERSION": "В файле отсутствует версия.",
+      "UNSUPPORTED_VERSION": "Эта версия файла не поддерживается.",
+      "MISSING_POKEMON_IDS": "В файле отсутствует pokemonIds.",
+      "INVALID_POKEMON_IDS": "pokemonIds в файле должны быть положительными числами.",
+      "POKEMON_LOOKUP_FAILED": "Не удалось загрузить покемонов из файла.",
+      "UNKNOWN": "Не удалось загрузить файл списка."
+    }
+  },
   "listDetails": {
     "eyebrow": "Детали списка",
     "title": "Список покемонов",
