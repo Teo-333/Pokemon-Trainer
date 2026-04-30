@@ -4,6 +4,7 @@ import { starterList } from '../test/fixtures';
 import { renderWithProviders } from '../test/renderWithProviders';
 
 vi.mock('../api/listsApi', () => ({
+  downloadList: vi.fn(),
   getList: vi.fn(),
   getLists: vi.fn(),
 }));
