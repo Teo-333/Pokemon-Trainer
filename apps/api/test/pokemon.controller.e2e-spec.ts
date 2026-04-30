@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request = require('supertest');
 import { setupApp } from '../src/common/bootstrap/setup-app';
@@ -44,8 +44,16 @@ describe('PokemonController', () => {
       offset: 20,
     });
 
-    await request(app.getHttpServer()).get('/api/pokemon?limit=10&offset=20').expect(200);
+    const response = await request(app.getHttpServer())
+      .get('/api/pokemon?limit=10&offset=20')
+      .expect(200);
 
+    expect(response.body).toEqual({
+      items: [],
+      total: 0,
+      limit: 10,
+      offset: 20,
+    });
     expect(pokemonService.findAll).toHaveBeenCalledWith(10, 20);
   });
 
@@ -72,8 +80,35 @@ describe('PokemonController', () => {
       types: ['grass'],
     });
 
-    await request(app.getHttpServer()).get('/api/pokemon/1').expect(200);
+    const response = await request(app.getHttpServer()).get('/api/pokemon/1').expect(200);
 
+    expect(response.body).toEqual({
+      id: 1,
+      name: 'bulbasaur',
+      speciesName: 'bulbasaur',
+      weight: 69,
+      spriteUrl: null,
+      types: ['grass'],
+    });
     expect(pokemonService.findOne).toHaveBeenCalledWith(1);
+  });
+
+  it('returns a consistent error for unknown Pokemon IDs', async () => {
+    pokemonService.findOne.mockRejectedValue(
+      new NotFoundException({
+        message: 'Pokemon was not found.',
+        code: 'POKEMON_NOT_FOUND',
+      }),
+    );
+
+    await request(app.getHttpServer())
+      .get('/api/pokemon/999999')
+      .expect(404)
+      .expect({
+        message: 'Pokemon was not found.',
+        code: 'POKEMON_NOT_FOUND',
+        statusCode: 404,
+        path: '/api/pokemon/999999',
+      });
   });
 });
