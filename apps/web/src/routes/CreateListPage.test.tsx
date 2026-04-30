@@ -81,6 +81,17 @@ describe('CreateListPage', () => {
     expect(getPokemonPage).toHaveBeenLastCalledWith(20, 20);
   });
 
+  it('renders the catalogue error state', async () => {
+    vi.mocked(getPokemonPage).mockRejectedValue(
+      new ApiError('Catalogue is unavailable.', 500, 'INTERNAL_ERROR', '/api/pokemon'),
+    );
+
+    renderWithProviders(undefined, { route: '/lists/new' });
+
+    expect(await screen.findByText('Could not load Pokemon')).toBeInTheDocument();
+    expect(screen.getByText('Catalogue is unavailable.')).toBeInTheDocument();
+  });
+
   it('selects and unselects Pokemon without duplicates', async () => {
     const user = userEvent.setup();
     renderWithProviders(undefined, { route: '/lists/new' });
@@ -198,6 +209,40 @@ describe('CreateListPage', () => {
     await uploadRawFile(user, '{');
 
     expect(await screen.findByText('Upload file must be valid JSON.')).toBeInTheDocument();
+  });
+
+  it('shows a translated error for unsupported upload versions', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(undefined, { route: '/lists/new' });
+
+    await uploadListFile(user, {
+      version: 2,
+      name: 'Future Team',
+      pokemonIds: [1, 4, 7],
+    });
+
+    expect(
+      await screen.findByText('This upload file version is not supported.'),
+    ).toBeInTheDocument();
+    expect(getPokemonById).not.toHaveBeenCalled();
+    expect(createList).not.toHaveBeenCalled();
+  });
+
+  it('clears an upload error after a valid upload', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(undefined, { route: '/lists/new' });
+
+    await uploadRawFile(user, '{');
+    expect(await screen.findByText('Upload file must be valid JSON.')).toBeInTheDocument();
+
+    await uploadListFile(user, {
+      version: 1,
+      name: 'Recovered Team',
+      pokemonIds: [1, 4, 7],
+    });
+
+    expect(await screen.findByDisplayValue('Recovered Team')).toBeInTheDocument();
+    expect(screen.queryByText('Upload file must be valid JSON.')).not.toBeInTheDocument();
   });
 
   it('renders Russian validation text', async () => {
