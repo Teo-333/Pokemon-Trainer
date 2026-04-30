@@ -61,7 +61,17 @@
   },
   "listDetails": {
     "eyebrow": "List details",
-    "title": "Pokemon list {{id}}",
-    "placeholder": "Saved list details will be added in a later step."
+    "title": "Pokemon list",
+    "loading": "Loading saved list...",
+    "errorTitle": "Could not load saved list",
+    "notFoundTitle": "List not found",
+    "notFound": "The saved list does not exist or was removed.",
+    "backToLists": "Back to lists",
+    "pokemonCount": "Pokemon",
+    "totalWeight": "Total weight",
+    "distinctSpecies": "Distinct species",
+    "weightValue": "{{count}} hg",
+    "pokemonTitle": "Saved Pokemon",
+    "species": "Species: {{species}}"
   }
 }
