@@ -6,6 +6,7 @@ import { starterList } from '../test/fixtures';
 import { renderWithProviders } from '../test/renderWithProviders';
 
 vi.mock('../api/listsApi', () => ({
+  downloadList: vi.fn(),
   getList: vi.fn(),
 }));
 
@@ -25,6 +26,7 @@ describe('ListDetailsPage', () => {
       'href',
       '/',
     );
+    expect(screen.getByRole('button', { name: 'Download JSON' })).toBeInTheDocument();
     expect(screen.getByText('Pokemon')).toBeInTheDocument();
     expect(screen.getByText('Total weight')).toBeInTheDocument();
     expect(screen.getByText('244 hg')).toBeInTheDocument();
@@ -89,6 +91,9 @@ describe('ListDetailsPage', () => {
     expect(await screen.findByText('Starter Team')).toBeInTheDocument();
     expect(screen.getByText(i18n.t('listDetails.totalWeight'))).toBeInTheDocument();
     expect(screen.getByText(i18n.t('listDetails.pokemonTitle'))).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: i18n.t('downloadList.download') }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: i18n.t('listDetails.backToLists') }))
       .toHaveAttribute('href', '/');
   });

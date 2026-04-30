@@ -59,6 +59,11 @@
     "MIN_DISTINCT_SPECIES": "Select at least 3 Pokemon of different species.",
     "WEIGHT_LIMIT_EXCEEDED": "Total weight must not exceed 1300 hectograms."
   },
+  "downloadList": {
+    "download": "Download JSON",
+    "downloading": "Downloading...",
+    "error": "Could not download saved list."
+  },
   "listDetails": {
     "eyebrow": "List details",
     "title": "Pokemon list",

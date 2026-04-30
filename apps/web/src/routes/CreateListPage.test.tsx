@@ -31,6 +31,7 @@ vi.mock('../api/pokemonApi', () => ({
 
 vi.mock('../api/listsApi', () => ({
   createList: vi.fn(),
+  downloadList: vi.fn(),
 }));
 
 describe('CreateListPage', () => {
