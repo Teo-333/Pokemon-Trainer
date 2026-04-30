@@ -70,6 +70,17 @@ Run all available tests:
 npm test
 ```
 
+Run minimal Playwright E2E smoke tests:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+The E2E smoke tests start the Vite frontend dev server automatically and mock
+backend API responses in the browser. They cover app load, valid list creation,
+and download/upload review without calling the real backend or PokéAPI.
+
 Run backend tests:
 
 ```bash
