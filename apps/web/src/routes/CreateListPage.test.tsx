@@ -2,7 +2,7 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApiError } from '../api/http';
 import { createList } from '../api/listsApi';
-import { getPokemonPage } from '../api/pokemonApi';
+import { getPokemonById, getPokemonPage } from '../api/pokemonApi';
 import {
   bulbasaur,
   charmander,
@@ -26,6 +26,7 @@ vi.mock('react-router-dom', async () => {
 });
 
 vi.mock('../api/pokemonApi', () => ({
+  getPokemonById: vi.fn(),
   getPokemonPage: vi.fn(),
 }));
 
@@ -36,12 +37,28 @@ vi.mock('../api/listsApi', () => ({
 
 describe('CreateListPage', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     navigateMock.mockReset();
     vi.mocked(getPokemonPage).mockResolvedValue({
       items: [bulbasaur, charmander, squirtle],
       total: 40,
       limit: 20,
       offset: 0,
+    });
+    vi.mocked(getPokemonById).mockImplementation(async (id: number) => {
+      const pokemonById = {
+        [bulbasaur.id]: bulbasaur,
+        [charmander.id]: charmander,
+        [squirtle.id]: squirtle,
+      };
+
+      const pokemon = pokemonById[id as keyof typeof pokemonById];
+
+      if (!pokemon) {
+        throw new ApiError('Pokemon not found.', 404, 'NOT_FOUND', `/api/pokemon/${id}`);
+      }
+
+      return pokemon;
     });
     vi.mocked(createList).mockResolvedValue(starterList);
   });
@@ -150,6 +167,39 @@ describe('CreateListPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('uploads a valid file, populates selection, and waits for explicit save', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(undefined, { route: '/lists/new' });
+
+    await uploadListFile(user, {
+      version: 1,
+      name: 'Uploaded Team',
+      pokemonIds: [1, 4, 7],
+    });
+
+    expect(await screen.findByDisplayValue('Uploaded Team')).toBeInTheDocument();
+    expect(getPokemonById).toHaveBeenCalledTimes(3);
+    expect(screen.getAllByText('bulbasaur')).toHaveLength(2);
+    expect(screen.getByText('Selection is valid.')).toBeInTheDocument();
+    expect(createList).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: 'Save list' }));
+
+    expect(createList).toHaveBeenCalledWith({
+      name: 'Uploaded Team',
+      pokemonIds: [1, 4, 7],
+    });
+  });
+
+  it('shows a translated error for invalid uploaded files', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(undefined, { route: '/lists/new' });
+
+    await uploadRawFile(user, '{');
+
+    expect(await screen.findByText('Upload file must be valid JSON.')).toBeInTheDocument();
+  });
+
   it('renders Russian validation text', async () => {
     localStorage.setItem('pokemonCollectionsLanguage', 'ru');
 
@@ -160,6 +210,26 @@ describe('CreateListPage', () => {
     ).toBeInTheDocument();
   });
 });
+
+async function uploadListFile(
+  user: ReturnType<typeof userEvent.setup>,
+  content: unknown,
+) {
+  await uploadRawFile(user, JSON.stringify(content));
+}
+
+async function uploadRawFile(user: ReturnType<typeof userEvent.setup>, content: string) {
+  const input = document.querySelector<HTMLInputElement>('input[type="file"]');
+
+  if (!input) {
+    throw new Error('Upload input not found');
+  }
+
+  await user.upload(
+    input,
+    new File([content], 'pokemon-list.json', { type: 'application/json' }),
+  );
+}
 
 async function findPokemonCard(name: string): Promise<HTMLElement> {
   const heading = await screen.findByRole('heading', { name });
