@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { ApiError } from '../api/http';
 import { getList } from '../api/listsApi';
+import { DownloadListButton } from '../components/lists/DownloadListButton';
 import { PageHeader } from '../components/layout/PageHeader';
 import { PokemonList } from '../types/list';
 
@@ -58,12 +59,15 @@ export function ListDetailsPage() {
     <section>
       <PageHeader
         actions={
-          <Link
-            className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
-            to="/"
-          >
-            {t('listDetails.backToLists')}
-          </Link>
+          <>
+            {list ? <DownloadListButton listId={list.id} listName={list.name} /> : null}
+            <Link
+              className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+              to="/"
+            >
+              {t('listDetails.backToLists')}
+            </Link>
+          </>
         }
         eyebrow={t('listDetails.eyebrow')}
         title={list?.name ?? t('listDetails.title')}
