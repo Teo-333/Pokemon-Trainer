@@ -1,4 +1,8 @@
-import { INestApplication, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  INestApplication,
+  NotFoundException,
+} from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request = require('supertest');
 import { setupApp } from '../src/common/bootstrap/setup-app';
@@ -49,7 +53,7 @@ describe('ListsController', () => {
       updatedAt: new Date('2026-04-29T10:00:00.000Z'),
     });
 
-    await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/api/lists')
       .send({
         name: 'Starter Team',
@@ -57,6 +61,12 @@ describe('ListsController', () => {
       })
       .expect(201);
 
+    expect(response.body).toMatchObject({
+      id: 'list-id',
+      name: 'Starter Team',
+      totalWeight: 300,
+      distinctSpeciesCount: 3,
+    });
     expect(listsService.create).toHaveBeenCalledWith({
       name: 'Starter Team',
       pokemonIds: [1, 4, 7],
@@ -70,9 +80,65 @@ describe('ListsController', () => {
         name: '',
         pokemonIds: ['bad'],
       })
-      .expect(400);
+      .expect(400)
+      .expect((response) => {
+        expect(response.body).toMatchObject({
+          code: 'VALIDATION_ERROR',
+          statusCode: 400,
+          path: '/api/lists',
+        });
+        expect(response.body.message).toContain(
+          'name must be longer than or equal to 1 characters',
+        );
+      });
 
     expect(listsService.create).not.toHaveBeenCalled();
+  });
+
+  it('returns a clear error for invalid species count', async () => {
+    listsService.create.mockRejectedValue(
+      new BadRequestException({
+        message: 'A list must contain at least 3 Pokemon of different species.',
+        code: 'MIN_DISTINCT_SPECIES',
+      }),
+    );
+
+    await request(app.getHttpServer())
+      .post('/api/lists')
+      .send({
+        name: 'Invalid Team',
+        pokemonIds: [1, 2, 3],
+      })
+      .expect(400)
+      .expect({
+        message: 'A list must contain at least 3 Pokemon of different species.',
+        code: 'MIN_DISTINCT_SPECIES',
+        statusCode: 400,
+        path: '/api/lists',
+      });
+  });
+
+  it('returns a clear error for overweight lists', async () => {
+    listsService.create.mockRejectedValue(
+      new BadRequestException({
+        message: 'Total weight must not exceed 1300 hectograms. Current total: 1420.',
+        code: 'WEIGHT_LIMIT_EXCEEDED',
+      }),
+    );
+
+    await request(app.getHttpServer())
+      .post('/api/lists')
+      .send({
+        name: 'Heavy Team',
+        pokemonIds: [1, 4, 143],
+      })
+      .expect(400)
+      .expect({
+        message: 'Total weight must not exceed 1300 hectograms. Current total: 1420.',
+        code: 'WEIGHT_LIMIT_EXCEEDED',
+        statusCode: 400,
+        path: '/api/lists',
+      });
   });
 
   it('returns list summaries', async () => {
@@ -87,8 +153,18 @@ describe('ListsController', () => {
       },
     ]);
 
-    await request(app.getHttpServer()).get('/api/lists').expect(200);
+    const response = await request(app.getHttpServer()).get('/api/lists').expect(200);
 
+    expect(response.body).toEqual([
+      {
+        id: 'list-id',
+        name: 'Starter Team',
+        totalWeight: 300,
+        distinctSpeciesCount: 3,
+        createdAt: '2026-04-29T10:00:00.000Z',
+        updatedAt: '2026-04-29T10:00:00.000Z',
+      },
+    ]);
     expect(listsService.findAll).toHaveBeenCalledTimes(1);
   });
 
@@ -103,8 +179,17 @@ describe('ListsController', () => {
       updatedAt: new Date('2026-04-29T10:00:00.000Z'),
     });
 
-    await request(app.getHttpServer()).get('/api/lists/list-id').expect(200);
+    const response = await request(app.getHttpServer())
+      .get('/api/lists/list-id')
+      .expect(200);
 
+    expect(response.body).toMatchObject({
+      id: 'list-id',
+      name: 'Starter Team',
+      pokemon: [],
+      totalWeight: 300,
+      distinctSpeciesCount: 3,
+    });
     expect(listsService.findOne).toHaveBeenCalledWith('list-id');
   });
 
@@ -141,7 +226,15 @@ describe('ListsController', () => {
       }),
     );
 
-    await request(app.getHttpServer()).get('/api/lists/missing').expect(404);
+    await request(app.getHttpServer())
+      .get('/api/lists/missing')
+      .expect(404)
+      .expect({
+        message: 'Pokemon list was not found.',
+        code: 'LIST_NOT_FOUND',
+        statusCode: 404,
+        path: '/api/lists/missing',
+      });
   });
 
   it('returns 404 for unknown list download IDs', async () => {
@@ -154,6 +247,12 @@ describe('ListsController', () => {
 
     await request(app.getHttpServer())
       .get('/api/lists/missing/download')
-      .expect(404);
+      .expect(404)
+      .expect({
+        message: 'Pokemon list was not found.',
+        code: 'LIST_NOT_FOUND',
+        statusCode: 404,
+        path: '/api/lists/missing/download',
+      });
   });
 });

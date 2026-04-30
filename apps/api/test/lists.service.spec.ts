@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { PokemonService } from '../src/pokemon/pokemon.service';
 import { PokemonDto } from '../src/pokemon/types/pokemon.types';
@@ -147,7 +147,11 @@ describe('ListsService', () => {
         name: 'Heavy Team',
         pokemonIds: [1, 4, 7],
       }),
-    ).rejects.toBeInstanceOf(BadRequestException);
+    ).rejects.toMatchObject({
+      response: {
+        code: 'WEIGHT_LIMIT_EXCEEDED',
+      },
+    });
     expect(MockListModel.saveCalls).toBe(0);
   });
 
@@ -238,6 +242,12 @@ describe('ListsService', () => {
 
   it('handles unknown IDs', async () => {
     await expect(service.findOne('507f1f77bcf86cd799439011')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
+
+  it('handles malformed IDs as not found', async () => {
+    await expect(service.findOne('not-an-object-id')).rejects.toBeInstanceOf(
       NotFoundException,
     );
   });
