@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react';
-import { getLists } from '../api/listsApi';
+import { getList, getLists } from '../api/listsApi';
+import { starterList } from '../test/fixtures';
 import { renderWithProviders } from '../test/renderWithProviders';
 
 vi.mock('../api/listsApi', () => ({
@@ -10,6 +11,7 @@ vi.mock('../api/listsApi', () => ({
 describe('router', () => {
   beforeEach(() => {
     vi.mocked(getLists).mockResolvedValue([]);
+    vi.mocked(getList).mockResolvedValue(starterList);
   });
 
   it('renders the main page', async () => {
@@ -29,11 +31,11 @@ describe('router', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the list details page', () => {
-    renderWithProviders(undefined, { route: '/lists/abc123' });
+  it('renders the list details page', async () => {
+    renderWithProviders(undefined, { route: `/lists/${starterList.id}` });
 
     expect(
-      screen.getByRole('heading', { name: 'Pokemon list abc123' }),
+      await screen.findByRole('heading', { name: 'Starter Team' }),
     ).toBeInTheDocument();
   });
 });
